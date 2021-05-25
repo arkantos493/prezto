@@ -23,45 +23,45 @@ autoload -Uz run-help-{ip,openssl,sudo}
 #
 
 # Disable correction.
-alias ack='nocorrect ack'
+#alias ack='nocorrect ack'
 alias cd='nocorrect cd'
 alias cp='nocorrect cp'
-alias ebuild='nocorrect ebuild'
+#alias ebuild='nocorrect ebuild'
 alias gcc='nocorrect gcc'
-alias gist='nocorrect gist'
+#alias gist='nocorrect gist'
 alias grep='nocorrect grep'
-alias heroku='nocorrect heroku'
+#alias heroku='nocorrect heroku'
 alias ln='nocorrect ln'
 alias man='nocorrect man'
 alias mkdir='nocorrect mkdir'
 alias mv='nocorrect mv'
-alias mysql='nocorrect mysql'
+#alias mysql='nocorrect mysql'
 alias rm='nocorrect rm'
 
 # Disable globbing.
-alias bower='noglob bower'
-alias fc='noglob fc'
+#alias bower='noglob bower'
+#alias fc='noglob fc'
 alias find='noglob find'
 alias ftp='noglob ftp'
 alias history='noglob history'
 alias locate='noglob locate'
-alias rake='noglob rake'
+#alias rake='noglob rake'
 alias rsync='noglob rsync'
 alias scp='noglob scp'
 alias sftp='noglob sftp'
 
 # Define general aliases.
-alias _='sudo'
-alias b='${(z)BROWSER}'
+#alias _='sudo'
+#alias b='${(z)BROWSER}'
 
-alias diffu="diff --unified"
-alias e='${(z)VISUAL:-${(z)EDITOR}}'
-alias mkdir="${aliases[mkdir]:-mkdir} -p"
-alias p='${(z)PAGER}'
-alias po='popd'
-alias pu='pushd'
-alias sa='alias | grep -i'
-alias type='type -a'
+#alias diffu="diff --unified"
+#alias e='${(z)VISUAL:-${(z)EDITOR}}'
+#alias mkdir="${aliases[mkdir]:-mkdir} -p"
+#alias p='${(z)PAGER}'
+#alias po='popd'
+#alias pu='pushd'
+#alias sa='alias | grep -i'
+#alias type='type -a'
 
 # Safe ops. Ask the user before doing anything destructive.
 alias cpi="${aliases[cp]:-cp} -i"
@@ -76,7 +76,16 @@ if zstyle -T ':prezto:module:utility' safe-ops; then
 fi
 
 # ls
-if [[ ${(@M)${(f)"$(ls --version 2>&1)"}:#*(GNU|lsd) *} ]]; then
+if is-callable 'colorls'; then
+  . $(dirname $(gem which colorls))/tab_complete.sh
+  alias lc=colorls
+  
+  if zstyle -T ':prezto:module:utility:ls' dirs-first; then
+    alias lc="${aliases[colorls]:-colorls} --group-directories-first"
+  fi
+fi
+
+if is-callable 'dircolors'; then
   # GNU Core Utilities
 
   if zstyle -T ':prezto:module:utility:ls' dirs-first; then
@@ -84,14 +93,9 @@ if [[ ${(@M)${(f)"$(ls --version 2>&1)"}:#*(GNU|lsd) *} ]]; then
   fi
 
   if zstyle -t ':prezto:module:utility:ls' color; then
-    # Define colors for GNU ls if they're not already defined
-    if (( ! $+LS_COLORS )); then
-      # Try dircolors when available
-      if is-callable 'dircolors'; then
-        eval "$(dircolors --sh $HOME/.dir_colors(N))"
-      else
-        export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=36;01:cd=33;01:su=31;40;07:sg=36;40;07:tw=32;40;07:ow=33;40;07:'
-      fi
+    # Call dircolors to define colors if they're missing
+    if [[ -z "$LS_COLORS" ]]; then
+      eval "$(dircolors --sh "$HOME/.zprezto/modules/utility/dir_colors")"
     fi
 
     alias ls="${aliases[ls]:-ls} --color=auto"
@@ -100,11 +104,15 @@ if [[ ${(@M)${(f)"$(ls --version 2>&1)"}:#*(GNU|lsd) *} ]]; then
   fi
 else
   # BSD Core Utilities
-
   if zstyle -t ':prezto:module:utility:ls' color; then
     # Define colors for BSD ls if they're not already defined
-    if (( ! $+LSCOLORS )); then
+    if [[ -z "$LSCOLORS" ]]; then
       export LSCOLORS='exfxcxdxbxGxDxabagacad'
+    fi
+
+    # Define colors for the completion system if they're not already defined
+    if [[ -z "$LS_COLORS" ]]; then
+      export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=36;01:cd=33;01:su=31;40;07:sg=36;40;07:tw=32;40;07:ow=33;40;07:'
     fi
 
     alias ls="${aliases[ls]:-ls} -G"
@@ -113,19 +121,20 @@ else
   fi
 fi
 
-alias l='ls -1A'         # Lists in one column, hidden files.
-alias ll='ls -lh'        # Lists human readable sizes.
-alias lr='ll -R'         # Lists human readable sizes, recursively.
-alias la='ll -A'         # Lists human readable sizes, hidden files.
-alias lm='la | "$PAGER"' # Lists human readable sizes, hidden files through pager.
-alias lk='ll -Sr'        # Lists sorted by size, largest last.
-alias lt='ll -tr'        # Lists sorted by date, most recent last.
-alias lc='lt -c'         # Lists sorted by date, most recent last, shows change time.
-alias lu='lt -u'         # Lists sorted by date, most recent last, shows access time.
+#alias l='ls -1A'         # Lists in one column, hidden files.
+#alias ll='ls -lh'        # Lists human readable sizes.
+#alias lr='ll -R'         # Lists human readable sizes, recursively.
+#alias la='ll -A'         # Lists human readable sizes, hidden files.
+#alias lm='la | "$PAGER"' # Lists human readable sizes, hidden files through pager.
+#alias lk='ll -Sr'        # Lists sorted by size, largest last.
+#alias lt='ll -tr'        # Lists sorted by date, most recent last.
+#alias lc='lt -c'         # Lists sorted by date, most recent last, shows change time.
+#alias lu='lt -u'         # Lists sorted by date, most recent last, shows access time.
+#alias sl='ls'            # Correction for common spelling error.
 
-if [[ ${(@M)${(f)"$(ls --version 2>&1)"}:#*GNU *} ]]; then
-  alias lx='ll -XB'      # Lists sorted by extension (GNU only).
-fi
+#if [[ ${(@M)${(f)"$(ls --version 2>&1)"}:#*GNU *} ]]; then
+#  alias lx='ll -XB'      # Lists sorted by extension (GNU only).
+#fi
 
 # Grep
 if zstyle -t ':prezto:module:utility:grep' color; then
@@ -136,30 +145,30 @@ if zstyle -t ':prezto:module:utility:grep' color; then
 fi
 
 # macOS Everywhere
-if is-darwin; then
-  alias o='open'
-elif is-cygwin; then
-  alias o='cygstart'
-  alias pbcopy='tee > /dev/clipboard'
-  alias pbpaste='cat /dev/clipboard'
-elif is-termux; then
-  alias o='termux-open'
-  alias pbcopy='termux-clipboard-set'
-  alias pbpaste='termux-clipboard-get'
-else
-  alias o='xdg-open'
+#if is-darwin; then
+#  alias o='open'
+#elif is-cygwin; then
+#  alias o='cygstart'
+#  alias pbcopy='tee > /dev/clipboard'
+#  alias pbpaste='cat /dev/clipboard'
+#elif is-termux; then
+#  alias o='termux-open'
+#  alias pbcopy='termux-clipboard-set'
+#  alias pbpaste='termux-clipboard-get'
+#else
+#  alias o='xdg-open'
+#
+#  if (( $+commands[xclip] )); then
+#    alias pbcopy='xclip -selection clipboard -in'
+#    alias pbpaste='xclip -selection clipboard -out'
+#  elif (( $+commands[xsel] )); then
+#    alias pbcopy='xsel --clipboard --input'
+#    alias pbpaste='xsel --clipboard --output'
+#  fi
+#fi
 
-  if (( $+commands[xclip] )); then
-    alias pbcopy='xclip -selection clipboard -in'
-    alias pbpaste='xclip -selection clipboard -out'
-  elif (( $+commands[xsel] )); then
-    alias pbcopy='xsel --clipboard --input'
-    alias pbpaste='xsel --clipboard --output'
-  fi
-fi
-
-alias pbc='pbcopy'
-alias pbp='pbpaste'
+#alias pbc='pbcopy'
+#alias pbp='pbpaste'
 
 # File Download
 zstyle -s ':prezto:module:utility:download' helper '_download_helper' || _download_helper='curl'
@@ -182,13 +191,13 @@ unset _download_helper{,s}
 alias df='df -kh'
 alias du='du -kh'
 
-if is-darwin || is-bsd; then
-  alias topc='top -o cpu'
-  alias topm='top -o vsize'
-else
-  alias topc='top -o %CPU'
-  alias topm='top -o %MEM'
-fi
+#if is-darwin || is-bsd; then
+#  alias topc='top -o cpu'
+#  alias topm='top -o vsize'
+#else
+#  alias topc='top -o %CPU'
+#  alias topm='top -o %MEM'
+#fi
 
 # Miscellaneous
 
@@ -231,9 +240,9 @@ function popdls {
 }
 
 # Prints columns 1 2 3 ... n.
-function slit {
-  awk "{ print ${(j:,:):-\$${^@}} }"
-}
+#function slit {
+#  awk "{ print ${(j:,:):-\$${^@}} }"
+#}
 
 # Finds files and executes a command on them.
 function find-exec {
@@ -257,14 +266,14 @@ function psu {
 # NOTE: This function is buggy and is not used anywhere until we can make sure
 # it's fixed. See https://github.com/sorin-ionescu/prezto/issues/1443 and
 # https://github.com/sorin-ionescu/prezto/issues/1521 for more information.
-function noremoteglob {
-  local -a argo
-  local cmd="$1"
-  for arg in ${argv:2}; do case $arg in
-    ( ./* ) argo+=( ${~arg} ) ;; # local relative, glob
-    (  /* ) argo+=( ${~arg} ) ;; # local absolute, glob
-    ( *:* ) argo+=( ${arg}  ) ;; # remote, noglob
-    (  *  ) argo+=( ${~arg} ) ;; # default, glob
-  esac; done
-  command $cmd "${(@)argo}"
-}
+#function noremoteglob {
+#  local -a argo
+#  local cmd="$1"
+#  for arg in ${argv:2}; do case $arg in
+#    ( ./* ) argo+=( ${~arg} ) ;; # local relative, glob
+#    (  /* ) argo+=( ${~arg} ) ;; # local absolute, glob
+#    ( *:* ) argo+=( ${arg}  ) ;; # remote, noglob
+#    (  *  ) argo+=( ${~arg} ) ;; # default, glob
+#  esac; done
+#  command $cmd "${(@)argo}"
+#}

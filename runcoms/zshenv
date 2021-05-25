@@ -6,6 +6,41 @@
 #
 
 # Ensure that a non-login, non-interactive shell has a defined environment.
-if [[ ( "$SHLVL" -eq 1 && ! -o LOGIN ) && -s "${ZDOTDIR:-$HOME}/.zprofile" ]]; then
-  source "${ZDOTDIR:-$HOME}/.zprofile"
-fi
+#if [[ ( "$SHLVL" -eq 1 && ! -o LOGIN ) && -s "${ZDOTDIR:-$HOME}/.zprofile" ]]; then
+#  source "${ZDOTDIR:-$HOME}/.zprofile"
+#fi
+
+
+export PATH=$HOME/.local/bin:$PATH
+
+
+### texlive 
+export TEXLIVE_ROOT=$HOME/Programs/texlive/2020
+export PATH=$TEXLIVE_ROOT/bin/x86_64-linux:$PATH
+export MANPATH=$TEXLIVE_ROOT/texmf-dist/doc/man:$MANPATH
+export INFOPATH=$TEXLIVE_ROOT/texmf-dist/doc/info:$INFOPATH
+
+
+### VPN
+export CISCO_ROOT=/opt/cisco/anyconnect
+export PATH=$CISCO_ROOT/bin:$PATH
+
+
+## ruby gems
+export GEM_HOME=$HOME/.gem
+export PATH=$GEM_HOME/bin:$PATH
+
+
+### SPACK
+export SPACK_ROOT=$HOME/Programs/spack
+export PATH=$SPACK_ROOT/bin:$PATH
+
+
+### JabRef
+export JABREF_ROOT=$HOME/Programs/JabRef-5.0/JabRef
+export PATH=$JABREF_ROOT/bin:$PATH
+
+
+### JetBrains
+export JETBRAINS_ROOT=$HOME/Programs/JetbBrains
+export PATH=$JETBRAINS_ROOT:$PATH
