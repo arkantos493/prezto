@@ -11,3 +11,74 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Customize to your needs...
+
+# To customize prompt, run `p10k configure` or edit ~/p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+
+# Redefine what is ignored by auto-notify
+AUTO_NOTIFY_IGNORE+=("peek")
+AUTO_NOTIFY_IGNORE+=("nohup")
+AUTO_NOTIFY_IGNORE+=("okular")
+AUTO_NOTIFY_IGNORE+=("clion")
+AUTO_NOTIFY_IGNORE+=("pycharm")
+
+
+
+### print environmental variables in a human readable way
+function print_env_var {
+    eval "echo \"\${$1//:/\\n}\""
+}
+
+### add to path if not already present
+function add_unique_path {
+    [[ ":$PATH:" != *":$1:"* ]] && export PATH="$1:${PATH}"
+}
+
+### make diff colored
+alias diff='diff --color=auto'
+
+### completely clear terminal
+alias clearall='echo -e \\033c'
+
+### immediately shutdown the system
+alias goodnight='shutdown -h now'
+
+### start pdf in presentation mode
+alias present='okular --presentation'
+
+
+### short application names
+alias word='libreoffice --writer'
+alias excel='libreoffice --calc'
+alias powerpoint='libreoffice --impress'
+
+
+### git related aliases 
+alias gits='git status'
+alias gitd='git diff --color=auto'
+alias gitc='git commit -m'
+alias gita='git add -A'
+alias gitac='git commit -am'
+alias gitl='git log --graph --abbrev-commit --decorate'
+
+### enable spack shell support
+. $HOME/Programs/spack/share/spack/setup-env.sh
+
+### enable spack's module support
+. $(spack location -i lmod)/lmod/lmod/init/zsh
+### add custom module path
+module use $HOME/.modulefiles
+
+
+### valgrind tooling aliases
+alias -g memcheck='valgrind --tool=memcheck'
+alias -g cachegrind='valgrind --tool=cachegrind'
+alias -g callgrind='valgrind --tool=callgrind'
+alias callgrind-gui='kcachegrind'
+alias -g massif='valgrind --tool=massif'
+alias massif-gui='massif-visualizer'
+
+### icecc (distributed C++ compiler)
+alias icecc-monitor='icemon'
+alias icecc-daemon='iceccd'
